@@ -172,7 +172,7 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
                       portador(a) do RA <strong>{student.ra}-{student.dv}</strong>, nascido(a) em 
                       <strong> {student.datanascimento ? format(parseISO(student.datanascimento), 'dd/MM/yyyy') : '___/___/___'}</strong>, 
                       encontra-se regularmente matriculado(a) nesta unidade escolar, cursando o(a) 
-                      <strong> {student.rturma}</strong> no ano letivo de 2024.
+                      <strong> {student.rturma}</strong> no ano letivo de 2026.
                     </p>
                   )}
 
