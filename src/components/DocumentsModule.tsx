@@ -57,12 +57,9 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
 
   const renderFooter = () => (
     <div className="mt-12 text-center">
-      <div className="flex justify-center gap-20 mb-8">
-        <div className="w-48 border-t border-slate-400 pt-1">
+      <div className="flex justify-center mb-8">
+        <div className="w-64 border-t border-slate-400 pt-1">
           <p className="text-[10px] uppercase font-bold text-slate-500">Direção Escolar</p>
-        </div>
-        <div className="w-48 border-t border-slate-400 pt-1">
-          <p className="text-[10px] uppercase font-bold text-slate-500">Responsável / Aluno</p>
         </div>
       </div>
       <div className="text-[9px] text-slate-400 uppercase leading-tight pt-4 border-t border-slate-100">
