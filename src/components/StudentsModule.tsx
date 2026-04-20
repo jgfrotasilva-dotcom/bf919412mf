@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, Plus, Trash2, Users, ArrowLeft } from 'lucide-react';
+import { Upload, Plus, Trash2, Users, ArrowLeft, Edit2 } from 'lucide-react';
 import { Student } from '../types';
 import * as XLSX from 'xlsx';
 
@@ -12,6 +12,7 @@ interface StudentsModuleProps {
 export default function StudentsModule({ students, setStudents, onClearData }: StudentsModuleProps) {
   const [selectedTurma, setSelectedTurma] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [newStudent, setNewStudent] = useState<Partial<Student>>({
     nome: '',
     rturma: '',
@@ -118,6 +119,13 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
     });
   };
 
+  const handleEditStudent = () => {
+    if (!editingStudent) return;
+
+    setStudents(students.map(s => s.id === editingStudent.id ? editingStudent : s));
+    setEditingStudent(null);
+  };
+
   const turmas = [...new Set(students.map(s => s.rturma))].sort();
 
   if (selectedTurma) {
@@ -181,12 +189,22 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button 
-                      onClick={() => setStudents(students.filter(s => s.id !== aluno.id))}
-                      className="p-1 hover:text-red-600 transition-colors"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => setEditingStudent(aluno)}
+                        className="p-1 hover:text-blue-600 transition-colors"
+                        title="Editar Aluno"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        onClick={() => setStudents(students.filter(s => s.id !== aluno.id))}
+                        className="p-1 hover:text-red-600 transition-colors"
+                        title="Excluir Aluno"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -202,6 +220,154 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
         </div>
 
         {showAddModal && renderAddModal()}
+        {editingStudent && renderEditModal()}
+      </div>
+    );
+  }
+
+  function renderEditModal() {
+    if (!editingStudent) return null;
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden animate-scale-in">
+          <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
+            <h3 className="font-bold uppercase tracking-widest">Editar Aluno</h3>
+            <button onClick={() => setEditingStudent(null)} className="hover:bg-white/20 p-1 rounded">✕</button>
+          </div>
+          
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Número</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded bg-gray-100 cursor-not-allowed"
+                value={editingStudent.numero}
+                disabled
+              />
+              <p className="text-[10px] text-gray-400 mt-1">Número do aluno não pode ser alterado</p>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nome Completo</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 uppercase"
+                value={editingStudent.nome}
+                onChange={e => setEditingStudent({...editingStudent, nome: e.target.value.toUpperCase()})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Turma</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 uppercase"
+                value={editingStudent.rturma}
+                onChange={e => setEditingStudent({...editingStudent, rturma: e.target.value.toUpperCase()})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">RA (com dígito)</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  className="flex-1 p-2 border rounded"
+                  value={editingStudent.ra}
+                  onChange={e => setEditingStudent({...editingStudent, ra: e.target.value})}
+                />
+                <input 
+                  type="text" 
+                  className="w-12 p-2 border rounded text-center"
+                  maxLength={1}
+                  value={editingStudent.dv}
+                  onChange={e => setEditingStudent({...editingStudent, dv: e.target.value})}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Data de Nascimento</label>
+              <input 
+                type="date" 
+                className="w-full p-2 border rounded"
+                value={editingStudent.datanascimento}
+                onChange={e => setEditingStudent({...editingStudent, datanascimento: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nome do Responsável</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 uppercase"
+                value={editingStudent.parent_name}
+                onChange={e => setEditingStudent({...editingStudent, parent_name: e.target.value.toUpperCase()})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Telefone</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded"
+                value={editingStudent.telefone}
+                onChange={e => setEditingStudent({...editingStudent, telefone: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded"
+                value={editingStudent.whatsapp}
+                onChange={e => setEditingStudent({...editingStudent, whatsapp: e.target.value})}
+                placeholder="Ex: 5516999999999"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Sexo</label>
+              <select 
+                className="w-full p-2 border rounded"
+                value={editingStudent.sexo}
+                onChange={e => setEditingStudent({...editingStudent, sexo: e.target.value as any})}
+              >
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2 pt-6">
+              <input 
+                type="checkbox" 
+                id="bf-edit" 
+                className="w-4 h-4"
+                checked={editingStudent.bolsafamilia}
+                onChange={e => setEditingStudent({...editingStudent, bolsafamilia: e.target.checked})}
+              />
+              <label htmlFor="bf-edit" className="text-sm font-semibold text-gray-700">Beneficiário Bolsa Família</label>
+            </div>
+            <div className="flex items-center gap-2 pt-6">
+              <select 
+                className="w-full p-2 border rounded"
+                value={editingStudent.situacao}
+                onChange={e => setEditingStudent({...editingStudent, situacao: e.target.value as any})}
+              >
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+              <label className="text-sm font-semibold text-gray-700">Situação</label>
+            </div>
+          </div>
+
+          <div className="p-4 bg-gray-50 border-t flex justify-end gap-3">
+            <button 
+              onClick={() => setEditingStudent(null)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 font-semibold"
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={handleEditStudent}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold uppercase"
+            >
+              Salvar Alterações
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
