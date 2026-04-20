@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Printer, FileText, Info, Eye } from 'lucide-react';
+import { Search, Printer, FileText, Info, Eye, MessageCircle } from 'lucide-react';
 import { Student, AttendanceRecord, SchoolSettings } from '../types';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -307,6 +307,18 @@ export default function AssessmentModule({ students, attendance, calendarEvents,
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        {student.whatsapp && student.frequencia < 85 && (
+                          <button 
+                            onClick={() => {
+                              const msg = `Olá ${student.parent_name || 'Sr(a). Responsável'}, notamos que a frequência de ${student.nome} está em ${student.frequencia}% este mês. Solicitamos o comparecimento à escola para evitar o risco de descumprimento do Bolsa Família.`;
+                              window.open(`https://wa.me/${student.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                            }}
+                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Notificar Responsável via WhatsApp"
+                          >
+                            <MessageCircle size={18} />
+                          </button>
+                        )}
                         <button 
                           onClick={() => setShowDetails(student.id)}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"

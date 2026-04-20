@@ -23,7 +23,8 @@ Gestão de dias letivos com bloqueio automático de finais de semana e marcaçã
 - Cadastro manual com numeração sequencial automática e botão fixo no topo.
 
 ### 📝 Digitação de Frequência
-Interface otimizada para lançamentos diários (Padrão: Presente), com bloqueios inteligentes baseados no calendário e sincronização em tempo real.
+- Interface otimizada para lançamentos diários (Padrão: Presente), com bloqueios inteligentes baseados no calendário e sincronização em tempo real.
+- **Notificação de Ausência Imediata**: Botão integrado para envio de mensagem via WhatsApp aos responsáveis no exato momento do lançamento de uma falta.
 
 ### 🔍 Apuração (Escala Inteligente)
 Classificação automática dos alunos em quatro níveis de risco:
@@ -31,6 +32,7 @@ Classificação automática dos alunos em quatro níveis de risco:
 - 🟡 **Atenção (75-84%)**: Risco de descumprimento - Alerta preventivo.
 - 🟠 **Alerta (60-74%)**: Situação preocupante - Contato formal.
 - 🔴 **Crítico (< 60%)**: Alto risco social - Busca Ativa imediata.
+- **Busca Ativa via WhatsApp**: Envio de mensagens de alerta personalizadas baseadas no percentual de frequência mensal do aluno.
 
 ### 📄 Documentos Escolares
 Gerador de documentos com cabeçalho oficial centralizado e logo à esquerda:
@@ -59,6 +61,8 @@ create table students (
   situacao text default 'Ativo',
   bolsafamilia boolean default false,
   telefone text,
+  whatsapp text,
+  parent_name text,
   datanascimento text,
   sexo text,
   created_at timestamp with time zone default now()

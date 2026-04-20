@@ -25,6 +25,8 @@ export function useSupabaseSync(
       if (studentsData && studentsData.length > 0) {
         setStudents(studentsData.map(s => ({
           ...s,
+          whatsapp: s.whatsapp || '',
+          parent_name: s.parent_name || '',
           datanascimento: s.datanascimento || s.dataNascimento || '' // Migration path
         })));
       }
@@ -86,6 +88,8 @@ export function useSupabaseSync(
         situacao: s.situacao,
         bolsafamilia: s.bolsafamilia,
         telefone: s.telefone,
+        whatsapp: s.whatsapp || '',
+        parent_name: s.parent_name || '',
         datanascimento: s.datanascimento,
         sexo: s.sexo
       }));

@@ -20,6 +20,8 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
     situacao: 'Ativo',
     bolsafamilia: false,
     telefone: '',
+    whatsapp: '',
+    parent_name: '',
     datanascimento: '',
     sexo: 'Masculino'
   });
@@ -55,6 +57,8 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
         const raKey = findCol(row, 'ra');
         const dvKey = findCol(row, 'dv');
         const telKey = findCol(row, 'telefone') || findCol(row, 'celular');
+        const whatsappKey = findCol(row, 'whatsapp') || findCol(row, 'zap');
+        const respKey = findCol(row, 'responsavel') || findCol(row, 'pai') || findCol(row, 'mae');
         const nascKey = findCol(row, 'nascimento') || findCol(row, 'data');
         const sexoKey = findCol(row, 'sexo');
 
@@ -71,6 +75,8 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
           situacao: String(row[situacaoKey || ''] || '').toLowerCase().includes('inativo') ? 'Inativo' : 'Ativo',
           bolsafamilia: isBF,
           telefone: String(row[telKey || ''] || ''),
+          whatsapp: String(row[whatsappKey || ''] || row[telKey || ''] || ''), // Tries whatsapp, then phone
+          parent_name: String(row[respKey || ''] || '').toUpperCase(),
           datanascimento: String(row[nascKey || ''] || ''),
           sexo: String(row[sexoKey || ''] || '').toLowerCase().startsWith('f') ? 'Feminino' : 'Masculino'
         };
@@ -105,6 +111,8 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
       situacao: 'Ativo',
       bolsafamilia: false,
       telefone: '',
+      whatsapp: '',
+      parent_name: '',
       datanascimento: '',
       sexo: 'Masculino'
     });
@@ -254,12 +262,31 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
               />
             </div>
             <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nome do Responsável</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 uppercase"
+                value={newStudent.parent_name}
+                onChange={e => setNewStudent({...newStudent, parent_name: e.target.value})}
+              />
+            </div>
+            <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Telefone</label>
               <input 
                 type="text" 
                 className="w-full p-2 border rounded"
                 value={newStudent.telefone}
                 onChange={e => setNewStudent({...newStudent, telefone: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp</label>
+              <input 
+                type="text" 
+                className="w-full p-2 border rounded"
+                value={newStudent.whatsapp}
+                onChange={e => setNewStudent({...newStudent, whatsapp: e.target.value})}
+                placeholder="Ex: 5516999999999"
               />
             </div>
             <div>
@@ -316,22 +343,18 @@ export default function StudentsModule({ students, setStudents, onClearData }: S
         </div>
         
         <div className="flex flex-wrap gap-3">
-          <label className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors font-semibold text-sm uppercase">
-            <Upload size={18} />
-            <span>Importar Excel</span>
-            <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleFileUpload} />
-          </label>
-          
-          <button 
-            onClick={() => {
-              setNewStudent({ ...newStudent, rturma: '' });
-              setShowAddModal(true);
-            }}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors font-semibold text-sm uppercase"
-          >
-            <Plus size={18} />
-            Novo Aluno
-          </button>
+          {students.length === 0 ? (
+            <label className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors font-semibold text-sm uppercase">
+              <Upload size={18} />
+              <span>Importar Excel</span>
+              <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleFileUpload} />
+            </label>
+          ) : (
+            <div className="flex items-center gap-2 bg-gray-100 text-gray-400 px-4 py-2 rounded-lg font-semibold text-sm uppercase border cursor-not-allowed" title="Dados já importados. Limpe os dados para importar novamente.">
+              <Upload size={18} />
+              <span>Importar Excel</span>
+            </div>
+          )}
 
           <button 
             onClick={() => {

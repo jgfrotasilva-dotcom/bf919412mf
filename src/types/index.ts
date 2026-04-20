@@ -8,6 +8,8 @@ export interface Student {
   situacao: 'Ativo' | 'Inativo';
   bolsafamilia: boolean;
   telefone: string;
+  whatsapp: string;
+  parent_name: string;
   datanascimento: string;
   sexo: 'Masculino' | 'Feminino';
 }

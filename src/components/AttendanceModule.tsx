@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Calendar as CalendarIcon, Users, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Save, Calendar as CalendarIcon, Users, CheckCircle, XCircle, AlertCircle, MessageCircle } from 'lucide-react';
 import { Student, AttendanceRecord, CalendarEvent } from '../types';
 import { format, isWeekend, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -142,8 +142,24 @@ export default function AttendanceModule({ students, attendance, setAttendance, 
                       <tr key={student.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-6 py-4 font-mono text-xs text-slate-400">{student.numero}</td>
                         <td className="px-6 py-4">
-                          <p className="font-bold text-slate-700 text-sm">{student.nome}</p>
-                          <p className="text-[10px] text-slate-400">RA: {student.ra}-{student.dv}</p>
+                          <div className="flex items-center gap-2">
+                            <div>
+                              <p className="font-bold text-slate-700 text-sm">{student.nome}</p>
+                              <p className="text-[10px] text-slate-400">RA: {student.ra}-{student.dv}</p>
+                            </div>
+                            {student.whatsapp && status === 'F' && (
+                              <button 
+                                onClick={() => {
+                                  const msg = `Olá ${student.parent_name || 'Sr(a). Responsável'}, informamos que o(a) aluno(a) ${student.nome} não compareceu à escola hoje, ${format(parseISO(selectedDate), "dd/MM/yyyy")}. Justifique a ausência para o acompanhamento do Bolsa Família.`;
+                                  window.open(`https://wa.me/${student.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                                }}
+                                className="p-1.5 bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition-colors shadow-sm"
+                                title="Notificar Ausência via WhatsApp"
+                              >
+                                <MessageCircle size={14} />
+                              </button>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex justify-center gap-2">

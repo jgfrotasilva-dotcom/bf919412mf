@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, Printer, Search, User } from 'lucide-react';
 import { Student, AttendanceRecord, SchoolSettings } from '../types';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface DocumentsModuleProps {
@@ -167,7 +167,7 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
                     <p className="indent-12">
                       Declaramos para os devidos fins que o(a) aluno(a) <strong>{student.nome}</strong>, 
                       portador(a) do RA <strong>{student.ra}-{student.dv}</strong>, nascido(a) em 
-                      <strong> {student.datanascimento ? format(parseISO(student.datanascimento), 'dd/MM/yyyy') : '___/___/___'}</strong>, 
+                      <strong> {student.datanascimento && student.datanascimento.length === 10 ? student.datanascimento : '___/___/___'}</strong>, 
                       encontra-se regularmente matriculado(a) nesta unidade escolar, cursando o(a) 
                       <strong> {student.rturma}</strong> no ano letivo de 2026.
                     </p>
@@ -176,8 +176,9 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
                   {docType === 'frequencia' && (
                     <p className="indent-12">
                       Declaramos para os devidos fins que o(a) aluno(a) <strong>{student.nome}</strong>, 
-                      portador(a) do RA <strong>{student.ra}-{student.dv}</strong>, matriculado(a) no(a) 
-                      <strong> {student.rturma}</strong>, apresenta até a presente data uma frequência escolar de 
+                      portador(a) do RA <strong>{student.ra}-{student.dv}</strong>, nascido(a) em 
+                      <strong> {student.datanascimento && student.datanascimento.length === 10 ? student.datanascimento : '___/___/___'}</strong>, 
+                      matriculado(a) no(a) <strong>{student.rturma}</strong>, apresenta até a presente data uma frequência escolar de 
                       <strong> {calculateFrequencia(student.id)}%</strong>, estando sua situação devidamente registrada 
                       em nosso sistema de controle pedagógico.
                     </p>
@@ -188,7 +189,8 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
                       <p className="indent-12">
                         Declaramos que o(a) Sr(a). <strong>{guardianName || '__________________________'}</strong>, 
                         portador(a) do RG <strong>{guardianRG || '____________'}</strong>, responsável pelo(a) aluno(a) 
-                        <strong> {student.nome}</strong>, compareceu a esta unidade escolar no dia 
+                        <strong> {student.nome}</strong>, nascido(a) em <strong>{student.datanascimento && student.datanascimento.length === 10 ? student.datanascimento : '___/___/___'}</strong>, 
+                        matriculado(a) no(a) <strong>{student.rturma}</strong>, compareceu a esta unidade escolar no dia 
                         <strong> {format(new Date(), 'dd/MM/yyyy')}</strong>, permanecendo das 
                         <strong> {arrivalTime || '__:__'}</strong> às <strong>{departureTime || '__:__'}</strong>.
                       </p>
@@ -201,7 +203,9 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
                       <p className="indent-12">
                         Pelo presente instrumento, eu <strong>{termoResponsavel || '__________________________'}</strong>, 
                         portador(a) do RG nº <strong>{termoRG || '____________'}</strong>, 
-                        responsável legal pelo(a) aluno(a) <strong>{student.nome}</strong>, tomo ciência de que o(a) 
+                        responsável legal pelo(a) aluno(a) <strong>{student.nome}</strong>, nascido(a) em 
+                        <strong>{student.datanascimento && student.datanascimento.length === 10 ? student.datanascimento : '___/___/___'}</strong>, 
+                        matriculado(a) no(a) <strong>{student.rturma}</strong>, tomo ciência de que o(a) 
                         referido(a) discente apresenta uma frequência escolar de <strong>{calculateFrequencia(student.id)}%</strong>, 
                         índice este que se encontra abaixo do mínimo exigido pelo Programa Bolsa Família e pelas normas 
                         da Secretaria da Educação do Estado de São Paulo.
