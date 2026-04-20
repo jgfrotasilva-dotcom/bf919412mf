@@ -56,13 +56,53 @@ export default function DocumentsModule({ students, settings, attendance }: Docu
   );
 
   const renderFooter = () => (
-    <div className="mt-12 text-center">
-      <div className="flex justify-center mb-8">
-        <div className="w-64 border-t border-slate-400 pt-1">
-          <p className="text-[10px] uppercase font-bold text-slate-500">Direção Escolar</p>
+    <div className="mt-12">
+      {/* ASSINATURAS DUPLAS PARA TERMO DE RESPONSABILIDADE */}
+      {docType === 'responsabilidade' ? (
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
+          {/* RESPONSÁVEL PELO ALUNO - ESQUERDA */}
+          <div className="text-center w-full md:w-5/12">
+            <div className="border-t-2 border-slate-800 pt-4">
+              <p className="text-sm font-bold text-slate-800">
+                {termoResponsavel || '_________________________________'}
+              </p>
+              <p className="text-sm text-slate-700">
+                RG: {termoRG || '_____________________'}
+              </p>
+              <p className="text-xs mt-3 text-slate-600 font-semibold">
+                RESPONSÁVEL PELO ALUNO
+              </p>
+            </div>
+          </div>
+          
+          {/* DIREÇÃO ESCOLAR - DIREITA */}
+          <div className="text-center w-full md:w-5/12">
+            <div className="border-t-2 border-slate-800 pt-4">
+              <p className="text-sm font-bold text-slate-800">
+                {settings.name || '_________________________________'}
+              </p>
+              <p className="text-xs mt-3 text-slate-600 font-semibold">
+                DIREÇÃO ESCOLAR
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="text-[9px] text-slate-400 uppercase leading-tight pt-4 border-t border-slate-100">
+      ) : (
+        /* ASSINATURA ÚNICA PARA DEMAIS DOCUMENTOS */
+        <div className="flex justify-center mb-8">
+          <div className="w-64 border-t-2 border-slate-800 pt-4">
+            <p className="text-sm font-bold text-slate-800">
+              {settings.name || '_________________________________'}
+            </p>
+            <p className="text-xs mt-3 text-slate-600 font-semibold">
+              DIREÇÃO ESCOLAR
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {/* RODAPÉ COM ENDEREÇO */}
+      <div className="text-[9px] text-slate-400 uppercase leading-tight pt-4 border-t border-slate-100 text-center">
         <p>{settings.address} - {settings.municipio}/{settings.uf}</p>
         <p>TEL: {settings.phone} | EMAIL: {settings.email}</p>
       </div>
