@@ -370,14 +370,28 @@ export default function AssessmentModule({ students, attendance, calendarEvents,
                   const dateStr = format(day, 'yyyy-MM-dd');
                   const record = attendance.find(a => a.student_id === showDetails && a.date === dateStr);
                   const isDayWeekend = isWeekend(day);
+                  const calendarEvent = calendarEvents.find(e => e.date === dateStr);
+                  const isBlocked = calendarEvent && (calendarEvent.type === 'Feriado' || calendarEvent.type === 'Ponto Facultativo');
 
                   return (
-                    <div key={dateStr} className={`flex items-center justify-between p-2 rounded ${isDayWeekend ? 'bg-slate-50' : 'bg-white border-b border-slate-100'}`}>
-                      <span className={`text-xs ${isDayWeekend ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <div key={dateStr} className={`flex items-center justify-between p-2 rounded ${
+                      isDayWeekend ? 'bg-slate-50' : 
+                      isBlocked ? 'bg-amber-50' : 
+                      'bg-white border-b border-slate-100'
+                    }`}>
+                      <span className={`text-xs ${
+                        isDayWeekend ? 'text-slate-300' : 
+                        isBlocked ? 'text-amber-700 font-semibold' : 
+                        'text-slate-600'
+                      }`}>
                         {format(day, "dd/MM (EEEE)", { locale: ptBR })}
                       </span>
                       {isDayWeekend ? (
                         <span className="text-[10px] text-slate-300 uppercase font-bold italic">Fim de Semana</span>
+                      ) : isBlocked ? (
+                        <span className="text-[10px] text-amber-700 uppercase font-bold italic">
+                          Bloqueado - {calendarEvent.type === 'Feriado' ? 'Feriado' : 'Ponto Facultativo'}
+                        </span>
                       ) : (
                         <div className="flex gap-1">
                           {record ? (
