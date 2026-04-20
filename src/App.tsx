@@ -170,7 +170,13 @@ export default function App() {
               setSettings={(data: SchoolSettings) => {
                 setSettings(data);
                 syncSettings(data);
-              }} 
+              }}
+              students={students}
+              attendance={attendance}
+              calendarEvents={events}
+              setStudents={setStudents}
+              setAttendance={setAttendance}
+              setCalendarEvents={setEvents}
             />
           )}
         </div>
