@@ -12,7 +12,7 @@ interface ReportsModuleProps {
 }
 
 export default function ReportsModule({ students, attendance, calendarEvents, settings }: ReportsModuleProps) {
-  const [reportType, setReportType] = useState<'mensal' | 'diario'>('mensal');
+  const [reportType, setReportType] = useState<'mensal' | 'diario' | 'ausencias'>('mensal');
   const [selectedTurma, setSelectedTurma] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
@@ -47,7 +47,25 @@ export default function ReportsModule({ students, attendance, calendarEvents, se
     .filter(s => s.situacao === 'Ativo')
     .filter(s => !selectedTurma || s.rturma === selectedTurma)
     .filter(s => !onlyBolsaFamilia || s.bolsafamilia)
-    .sort((a, b) => (a.numero || 0) - (b.numero || 0));
+    .filter(s => {
+      // Se for relatório de ausências, mostra apenas alunos com falta na data
+      if (reportType === 'ausencias') {
+        const attendanceRecord = attendance.find(a => a.student_id === s.id && a.date === selectedDate);
+        return attendanceRecord && attendanceRecord.status === 'F';
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      // Para relatório de ausências, ordena por turma primeiro, depois por número
+      if (reportType === 'ausencias') {
+        if (a.rturma !== b.rturma) {
+          return a.rturma.localeCompare(b.rturma);
+        }
+        return (a.numero || 0) - (b.numero || 0);
+      }
+      // Para outros relatórios, mantém ordenação por número
+      return (a.numero || 0) - (b.numero || 0);
+    });
 
   const exportToExcel = () => {
     const data = filteredStudents.map(s => {
@@ -82,7 +100,7 @@ export default function ReportsModule({ students, attendance, calendarEvents, se
           <p className="text-[12px]">Unidade Regional de Ensino de Araraquara</p>
           <p className="text-lg mt-1">{settings.name}</p>
           <p className="text-xs mt-3 border-t border-slate-300 pt-2 italic">
-            {reportType === 'mensal' ? `Relatório de Frequência Mensal - Ref: ${selectedMonth}` : `Relatório Diário de Frequência - Data: ${format(parseISO(selectedDate), 'dd/MM/yyyy')}`}
+            {reportType === 'mensal' ? `Relatório de Frequência Mensal - Ref: ${selectedMonth}` : reportType === 'ausencias' ? `Relatório de Ausências - Data: ${format(parseISO(selectedDate), 'dd/MM/yyyy')}` : `Relatório Diário de Frequência - Data: ${format(parseISO(selectedDate), 'dd/MM/yyyy')}`}
           </p>
         </div>
       </div>
@@ -96,8 +114,9 @@ export default function ReportsModule({ students, attendance, calendarEvents, se
               value={reportType}
               onChange={e => setReportType(e.target.value as any)}
             >
-              <option value="mensal">Mensal (Resumo)</option>
-              <option value="diario">Diário (Por Data)</option>
+<option value="mensal">Mensal (Resumo)</option>
+<option value="diario">Diário (Por Data)</option>
+<option value="ausencias">Ausências por Data (Apenas Faltosos)</option>
             </select>
           </div>
           <div>
